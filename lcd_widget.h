@@ -47,6 +47,9 @@ public:
     void SetCursorPosition(uint16_t x, uint16_t y);
     void SetText(QString text);
 
+    uint8_t* GetDisplayCharBuffer();
+    int GetDisplayCharBufferLength();
+
     void ClearLCD();
 
 private:

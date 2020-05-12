@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -10,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lcd_column->setValue(ui->lcd_widget->GetCurrentColumn());
     ui->lcd_row->setValue(ui->lcd_widget->GetCurrentRow());
     ui->lcd_widget->ClearLCD();
+
+    connect(&timer1,SIGNAL(timeout()),this,SLOT(timer1_timeout()));
+    timer1.setInterval(20);
 }
 
 MainWindow::~MainWindow()
@@ -31,4 +36,25 @@ void MainWindow::on_quit_clicked()
 void MainWindow::on_lcd_text_enter_clicked()
 {
     ui->lcd_widget->SetText(ui->lcd_text_edit->text());
+}
+
+void MainWindow::on_random_start_clicked()
+{
+    timer1.start();
+}
+
+void MainWindow::on_random_stop_clicked()
+{
+    timer1.stop();
+}
+
+void MainWindow::timer1_timeout()
+{
+    uint8_t *buffer = ui->lcd_widget->GetDisplayCharBuffer();
+    int buffer_len = ui->lcd_widget->GetDisplayCharBufferLength();
+
+    for(int i=0; i<buffer_len; i++)
+        buffer[i] = rand() % 133 + 33;
+
+    ui->lcd_widget->RefreshDisplay();
 }

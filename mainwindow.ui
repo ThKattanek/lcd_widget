@@ -59,6 +59,20 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="random_start">
+        <property name="text">
+         <string>Random Start</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="random_stop">
+        <property name="text">
+         <string>Random Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>

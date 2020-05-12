@@ -123,6 +123,16 @@ void LCDWidget::SetText(QString text)
     RefreshDisplay();
 }
 
+uint8_t *LCDWidget::GetDisplayCharBuffer()
+{
+    return display_char_buffer;
+}
+
+int LCDWidget::GetDisplayCharBufferLength()
+{
+    return row * column;
+}
+
 void LCDWidget::ClearLCD()
 {
     for(int i=0; i<row*column; i++)
@@ -176,7 +186,7 @@ void LCDWidget::CopyCharRomToRam()
 {
     for(int i=0; i<ROM_FONT_CHARS; i++)
         for(int j=0; j<LCD_CHAR_W; j++)
-            char_ram[i+CGRAM_STORAGE_CHARS][j] = fontA00[i][j];
+            char_ram[i+CGRAM_STORAGE_CHARS][j] = fontA02[i][j];
 }
 
 // A00 (Japanese) character set.
