@@ -5,12 +5,19 @@
 LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
   display(nullptr)
 {
-   display = new QImage(200,100,QImage::Format_RGB32);
+    // Default Parameter
+    column = 20;
+    row = 4;
 
-   this->setFixedHeight(400);
-   this->setFixedWidth(800);
+    CalculateDisplaySize();
 
-   qDebug() << ">> LCDWidget Constructor";
+    display = new QImage(display_size_w, display_size_h, QImage::Format_RGB32);
+    display->fill(QColor(31,31,255));
+
+    this->setFixedWidth(display_size_w);
+    this->setFixedHeight(display_size_h);
+
+    qDebug() << ">> LCDWidget Constructor";
 }
 
 LCDWidget::~LCDWidget()
@@ -26,8 +33,14 @@ void LCDWidget::paintEvent(QPaintEvent *event)
                         QPainter::SmoothPixmapTransform |
                         QPainter::TextAntialiasing, true);
 
-    p.scale(4,4);
+    //p.scale(4,4);
     p.drawImage(0,0,*display);
+}
+
+void LCDWidget::CalculateDisplaySize()
+{
+    display_size_w = 2*LCD_BORDER_SIZE + (column-1) * LCD_CHAR_SPACE_X + column * LCD_CHAR_PIXEL_SIZE_W;
+    display_size_h = 2*LCD_BORDER_SIZE + (row-1) * LCD_CHAR_SPACE_Y + row * LCD_CHAR_PIXEL_SIZE_H;
 }
 
 // A00 (Japanese) character set.
