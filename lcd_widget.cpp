@@ -1,8 +1,33 @@
 #include "lcd_widget.h"
+#include <QDebug>
+#include <QPainter>
 
-LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent)
+LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
+  display(nullptr)
 {
+   display = new QImage(200,100,QImage::Format_RGB32);
 
+   this->setFixedHeight(400);
+   this->setFixedWidth(800);
+
+   qDebug() << ">> LCDWidget Constructor";
+}
+
+LCDWidget::~LCDWidget()
+{
+    delete display;
+}
+
+void LCDWidget::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+
+    p.setRenderHints(QPainter::Antialiasing |
+                        QPainter::SmoothPixmapTransform |
+                        QPainter::TextAntialiasing, true);
+
+    p.scale(4,4);
+    p.drawImage(0,0,*display);
 }
 
 // A00 (Japanese) character set.
