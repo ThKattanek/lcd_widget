@@ -3,21 +3,24 @@
 #include <QPainter>
 
 LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
-  display(nullptr)
+  display(nullptr), display_char_buffer(nullptr)
 {
     // Default Parameter
     column = 20;
     row = 4;
 
+    color_background_1 = QColor(21,31,255);
+    color_background_2 = QColor(19,10,233);
+    color_pixel = QColor(230,230,245);
+
+    SetCursorPosition(0,0);
+
     CalculateDisplaySize();
+    CopyCharRomToRam();
 
     display = new QImage(display_size_w, display_size_h, QImage::Format_RGB32);
-    display->fill(QColor(31,31,255));
 
-    this->setFixedWidth(display_size_w);
-    this->setFixedHeight(display_size_h);
-
-    qDebug() << ">> LCDWidget Constructor";
+    RefreshDisplay();
 }
 
 LCDWidget::~LCDWidget()
@@ -25,7 +28,7 @@ LCDWidget::~LCDWidget()
     delete display;
 }
 
-void LCDWidget::paintEvent(QPaintEvent *event)
+void LCDWidget::paintEvent(QPaintEvent* /* event */)
 {
     QPainter p(this);
 
@@ -33,19 +36,152 @@ void LCDWidget::paintEvent(QPaintEvent *event)
                         QPainter::SmoothPixmapTransform |
                         QPainter::TextAntialiasing, true);
 
-    //p.scale(4,4);
+    p.scale((float)this->width() / this->display_size_w, (float)this->height() / this->display_size_h);
     p.drawImage(0,0,*display);
+}
+
+void LCDWidget::RefreshDisplay()
+{
+    display->fill(color_background_1);
+
+    int i=0;
+    for(int y=0; y<row; y++)
+        for(int x=0; x<column; x++)
+        {
+            DrawChar((x*(LCD_CHAR_PIXEL_SIZE_W+LCD_CHAR_SPACE_X))+LCD_BORDER_SIZE, (y*(LCD_CHAR_PIXEL_SIZE_H+LCD_CHAR_SPACE_Y))+LCD_BORDER_SIZE,display_char_buffer[i++]);
+        }
+
+    this->update();
+}
+
+int LCDWidget::GetCurrentColumn()
+{
+    return column;
+}
+
+int LCDWidget::GetCurrentRow()
+{
+    return row;
+}
+
+void LCDWidget::SetColorBackground1(const QColor color)
+{
+    color_background_1 = color;
+    RefreshDisplay();
+}
+
+void LCDWidget::SetColorBackground2(const QColor color)
+{
+    color_background_2 = color;
+    RefreshDisplay();
+}
+
+void LCDWidget::SetColorPixel(const QColor color)
+{
+    color_pixel = color;
+    RefreshDisplay();
+}
+
+QColor LCDWidget::SetColorBackground1()
+{
+    return color_background_1;
+}
+
+QColor LCDWidget::SetColorBackground2()
+{
+    return color_background_2;
+}
+
+QColor LCDWidget::SetColorPixel()
+{
+    return color_pixel;
+}
+
+void LCDWidget::SetCursorPosition(uint16_t x, uint16_t y)
+{
+    cursor_pos_x = x;
+    cursor_pos_y = y;
+}
+
+void LCDWidget::SetText(QString text)
+{
+    for(int i=0; i < text.length(); i++)
+    {
+        int idx = cursor_pos_y * column + cursor_pos_x;
+        QChar c = text.at(i);
+        display_char_buffer[idx] = (uint8_t)c.toLatin1();
+
+        cursor_pos_x++;
+        if(cursor_pos_x == column)
+        {
+            cursor_pos_x = 0;
+            cursor_pos_y++;
+            if(cursor_pos_y == row)
+                cursor_pos_y = 0;
+        }
+    }
+    RefreshDisplay();
+}
+
+void LCDWidget::ClearLCD()
+{
+    for(int i=0; i<row*column; i++)
+        display_char_buffer[i] = ' ';
+    SetCursorPosition(0,0);
+    RefreshDisplay();
+    update();
 }
 
 void LCDWidget::CalculateDisplaySize()
 {
     display_size_w = 2*LCD_BORDER_SIZE + (column-1) * LCD_CHAR_SPACE_X + column * LCD_CHAR_PIXEL_SIZE_W;
     display_size_h = 2*LCD_BORDER_SIZE + (row-1) * LCD_CHAR_SPACE_Y + row * LCD_CHAR_PIXEL_SIZE_H;
+
+    if(display_char_buffer != nullptr)
+        delete [] display_char_buffer;
+    display_char_buffer = new uint8_t[column * row];
+}
+
+void LCDWidget::DrawChar(int x, int y, uint8_t c)
+{
+    for(int c_pos=0; c_pos < 5; c_pos ++)
+    {
+        int y2 = y;
+        for (int y1 = 0; y1 < LCD_CHAR_H; y1++)
+        {
+            QColor col;
+            if((char_ram[c][c_pos] >> (LCD_CHAR_H-y1-1)) & 1)
+                col = color_pixel;
+            else
+                col = color_background_2;
+
+            for (int z=0;z<LCD_PIXEL_SIZE_H;z++)
+            {
+                for(int i=0; i<LCD_PIXEL_SIZE_W; i++)
+                    display->setPixel(x+i+c_pos*(LCD_PIXEL_SIZE_W+LCD_PIXEL_SPACE_X), y2, col.rgb());
+                y2++;
+            }
+
+            for(int y1 = 0; y1 < LCD_PIXEL_SPACE_Y; y1++)
+            {
+                for(int i=0; i<LCD_PIXEL_SIZE_W; i++)
+                    display->setPixel(x+i+c_pos*(LCD_PIXEL_SIZE_W+LCD_PIXEL_SPACE_X), y2, color_background_1.rgb());
+                y2++;
+            }
+        }
+    }
+}
+
+void LCDWidget::CopyCharRomToRam()
+{
+    for(int i=0; i<ROM_FONT_CHARS; i++)
+        for(int j=0; j<LCD_CHAR_W; j++)
+            char_ram[i+CGRAM_STORAGE_CHARS][j] = fontA00[i][j];
 }
 
 // A00 (Japanese) character set.
 // skip first 16 characters reserved for CGRAM
-static const uint8_t fontA00[ROM_FONT_CHARS][CHAR_WIDTH_PX] = {
+const uint8_t LCDWidget::fontA00[ROM_FONT_CHARS][LCD_CHAR_W] = {
   {0x00, 0x00, 0x00, 0x00, 0x00}, //  16 -
   {0x00, 0x00, 0x00, 0x00, 0x00}, //  17 -
   {0x00, 0x00, 0x00, 0x00, 0x00}, //  18 -
@@ -291,7 +427,7 @@ static const uint8_t fontA00[ROM_FONT_CHARS][CHAR_WIDTH_PX] = {
 
 // A02 (European) character set.
 // skip first 16 characters reserved for CGRAM
-static const uint8_t fontA02[ROM_FONT_CHARS][CHAR_WIDTH_PX] = {
+const uint8_t LCDWidget::fontA02[ROM_FONT_CHARS][LCD_CHAR_W] = {
  {0x00, 0x7f, 0x3e, 0x1c, 0x08}, //  16 -
  {0x08, 0x1c, 0x3e, 0x7f, 0x00}, //  17 -
  {0x30, 0x50, 0x00, 0x30, 0x50}, //  18 -

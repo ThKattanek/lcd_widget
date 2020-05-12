@@ -15,6 +15,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_lcd_clear_clicked();
+
+    void on_quit_clicked();
+
+    void on_lcd_text_enter_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
