@@ -158,7 +158,7 @@ void LCDWidget::ClearLCD()
 
 bool LCDWidget::SaveImage(QString filename)
 {
-    qDebug() << display->save(filename);
+    return display->save(filename);
 }
 
 void LCDWidget::CalculateDisplaySize()
