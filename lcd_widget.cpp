@@ -142,6 +142,11 @@ void LCDWidget::ClearLCD()
     update();
 }
 
+bool LCDWidget::SaveImage(QString filename)
+{
+    qDebug() << display->save(filename);
+}
+
 void LCDWidget::CalculateDisplaySize()
 {
     display_size_w = 2*LCD_BORDER_SIZE + (column-1) * LCD_CHAR_SPACE_X + column * LCD_CHAR_PIXEL_SIZE_W;

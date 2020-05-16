@@ -25,6 +25,10 @@ private slots:
 
     void timer1_timeout();
 
+    void on_action_Exit_triggered();
+
+    void on_actionSave_Image_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer timer1;

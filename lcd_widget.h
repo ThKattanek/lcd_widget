@@ -1,4 +1,4 @@
-#ifndef LCDWIDGET_H
+﻿#ifndef LCDWIDGET_H
 #define LCDWIDGET_H
 
 #include <QWidget>
@@ -51,6 +51,7 @@ public:
     int GetDisplayCharBufferLength();
 
     void ClearLCD();
+    bool SaveImage(QString filename);
 
 private:
     void CalculateDisplaySize();

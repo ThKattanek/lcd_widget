@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QDebug>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -57,4 +58,18 @@ void MainWindow::timer1_timeout()
         buffer[i] = rand() % 133 + 33;
 
     ui->lcd_widget->RefreshDisplay();
+}
+
+void MainWindow::on_action_Exit_triggered()
+{
+    this->close();
+}
+
+void MainWindow::on_actionSave_Image_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),QDir::homePath(),tr("Images (*.png *.xpm *.jpg)"));
+    if(fileName != "")
+    {
+       ui->lcd_widget->SaveImage(fileName);
+    }
 }
