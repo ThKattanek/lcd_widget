@@ -47,13 +47,22 @@ public:
     QColor GetColorBackground2();
     QColor GetColorPixel();
 
-    void SetCursorPosition(uint16_t x, uint16_t y);
-    void SetText(QString text);
-
     uint8_t* GetDisplayCharBuffer();
     int GetDisplayCharBufferLength();
 
-    void ClearLCD();
+    void Clear();
+    void Home();
+    void SetCursor(uint8_t column, uint8_t row);    // column = 0- ... / row Beginnt immer mit 1. 1=1.Zeile 2=2.Zeile ...
+    void Data(uint8_t data);
+    void String(QString text);
+    void SetUserChar(uint8_t char_nr, uint8_t *pixel_buffer);
+
+
+    ///
+    /// \brief SaveImage - Write Image Format Support: BMP, JPG, JPEG, PNG, PPM, XBM, XPM
+    /// \param filename
+    /// \return
+    ///
     bool SaveImage(QString filename);
 
 private:

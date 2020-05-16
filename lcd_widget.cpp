@@ -13,12 +13,10 @@ LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
     color_background_2 = QColor(19,10,233);
     color_pixel = QColor(230,230,245);
 
-    SetCursorPosition(0,0);
+    SetCursor(0,0);
 
     CalculateDisplaySize();
     CopyCharRomToRam();
-
-
 
     RefreshDisplay();
 }
@@ -111,13 +109,49 @@ QColor LCDWidget::GetColorPixel()
     return color_pixel;
 }
 
-void LCDWidget::SetCursorPosition(uint16_t x, uint16_t y)
+uint8_t *LCDWidget::GetDisplayCharBuffer()
 {
-    cursor_pos_x = x;
-    cursor_pos_y = y;
+    return display_char_buffer;
 }
 
-void LCDWidget::SetText(QString text)
+int LCDWidget::GetDisplayCharBufferLength()
+{
+    return row * column;
+}
+
+void LCDWidget::Clear()
+{
+    for(int i=0; i<row*column; i++)
+        display_char_buffer[i] = ' ';
+    Home();
+    RefreshDisplay();
+    update();
+}
+
+void LCDWidget::Home()
+{
+    cursor_pos_x = 0;
+    cursor_pos_y = 0;
+}
+
+void LCDWidget::SetCursor(uint8_t column, uint8_t row)
+{
+    if(row == 0)
+        return;
+
+    cursor_pos_x = column;
+    cursor_pos_y = row-1;
+}
+
+void LCDWidget::Data(uint8_t data)
+{
+    int idx = cursor_pos_y * column + cursor_pos_x;
+    display_char_buffer[idx] = data;
+
+    RefreshDisplay();
+}
+
+void LCDWidget::String(QString text)
 {
     for(int i=0; i < text.length(); i++)
     {
@@ -137,23 +171,11 @@ void LCDWidget::SetText(QString text)
     RefreshDisplay();
 }
 
-uint8_t *LCDWidget::GetDisplayCharBuffer()
+void LCDWidget::SetUserChar(uint8_t char_nr, uint8_t *pixel_buffer)
 {
-    return display_char_buffer;
-}
-
-int LCDWidget::GetDisplayCharBufferLength()
-{
-    return row * column;
-}
-
-void LCDWidget::ClearLCD()
-{
-    for(int i=0; i<row*column; i++)
-        display_char_buffer[i] = ' ';
-    SetCursorPosition(0,0);
-    RefreshDisplay();
-    update();
+    char_nr &= 0x0f;
+    for(int i=0; i<LCD_CHAR_W; i++)
+        char_ram[char_nr][i] = pixel_buffer[i];
 }
 
 bool LCDWidget::SaveImage(QString filename)
