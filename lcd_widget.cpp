@@ -6,8 +6,8 @@ LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
   display(nullptr), display_char_buffer(nullptr)
 {
     // Default Parameter
-    column = 20;
-    row = 4;
+    column = 16;
+    row = 2;
 
     color_background_1 = QColor(21,31,255);
     color_background_2 = QColor(19,10,233);
