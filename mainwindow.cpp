@@ -73,3 +73,18 @@ void MainWindow::on_actionSave_Image_triggered()
        ui->lcd_widget->SaveImage(fileName);
     }
 }
+
+void MainWindow::on_lcd_text_edit_returnPressed()
+{
+    on_lcd_text_enter_clicked();
+}
+
+void MainWindow::on_lcd_column_valueChanged(int arg1)
+{
+    ui->lcd_widget->SetColumn(arg1);
+}
+
+void MainWindow::on_lcd_row_valueChanged(int arg1)
+{
+    ui->lcd_widget->SetRow(arg1);
+}

@@ -29,6 +29,12 @@ private slots:
 
     void on_actionSave_Image_triggered();
 
+    void on_lcd_text_edit_returnPressed();
+
+    void on_lcd_column_valueChanged(int arg1);
+
+    void on_lcd_row_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     QTimer timer1;

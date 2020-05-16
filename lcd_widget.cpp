@@ -18,7 +18,7 @@ LCDWidget::LCDWidget(QWidget *parent) : QWidget(parent),
     CalculateDisplaySize();
     CopyCharRomToRam();
 
-    display = new QImage(display_size_w, display_size_h, QImage::Format_RGB32);
+
 
     RefreshDisplay();
 }
@@ -62,6 +62,20 @@ int LCDWidget::GetCurrentColumn()
 int LCDWidget::GetCurrentRow()
 {
     return row;
+}
+
+void LCDWidget::SetColumn(int column)
+{
+    this->column = column;
+    CalculateDisplaySize();
+    RefreshDisplay();
+}
+
+void LCDWidget::SetRow(int row)
+{
+    this->row = row;
+    CalculateDisplaySize();
+    RefreshDisplay();
 }
 
 void LCDWidget::SetColorBackground1(const QColor color)
@@ -155,6 +169,14 @@ void LCDWidget::CalculateDisplaySize()
     if(display_char_buffer != nullptr)
         delete [] display_char_buffer;
     display_char_buffer = new uint8_t[column * row];
+
+    for(int i=0; i<(column * row); i++)
+        display_char_buffer[i] = ' ';
+
+    if(display != nullptr)
+        delete display;
+
+    display = new QImage(display_size_w, display_size_h, QImage::Format_RGB32);
 }
 
 void LCDWidget::DrawChar(int x, int y, uint8_t c)

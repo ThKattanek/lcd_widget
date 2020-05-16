@@ -36,6 +36,9 @@ public:
     int GetCurrentColumn();
     int GetCurrentRow();
 
+    void SetColumn(int column);
+    void SetRow(int row);
+
     void SetColorBackground1(const QColor color);
     void SetColorBackground2(const QColor color);
     void SetColorPixel(const QColor color);
