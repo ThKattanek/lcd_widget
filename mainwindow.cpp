@@ -10,8 +10,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
+
     ui->lcd_column->setValue(ui->lcd_widget->GetCurrentColumn());
     ui->lcd_row->setValue(ui->lcd_widget->GetCurrentRow());
+
+    ui->lcd_column->setValue(20);
+    ui->lcd_widget->SetColumn(20);
+
+    ui->lcd_row->setValue(4);
+    ui->lcd_widget->SetRow(4);
+
     ui->lcd_widget->ClearLCD();
 
     connect(&timer1,SIGNAL(timeout()),this,SLOT(timer1_timeout()));

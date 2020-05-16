@@ -43,9 +43,9 @@ public:
     void SetColorBackground2(const QColor color);
     void SetColorPixel(const QColor color);
 
-    QColor SetColorBackground1();
-    QColor SetColorBackground2();
-    QColor SetColorPixel();
+    QColor GetColorBackground1();
+    QColor GetColorBackground2();
+    QColor GetColorPixel();
 
     void SetCursorPosition(uint16_t x, uint16_t y);
     void SetText(QString text);

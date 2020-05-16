@@ -96,17 +96,17 @@ void LCDWidget::SetColorPixel(const QColor color)
     RefreshDisplay();
 }
 
-QColor LCDWidget::SetColorBackground1()
+QColor LCDWidget::GetColorBackground1()
 {
     return color_background_1;
 }
 
-QColor LCDWidget::SetColorBackground2()
+QColor LCDWidget::GetColorBackground2()
 {
     return color_background_2;
 }
 
-QColor LCDWidget::SetColorPixel()
+QColor LCDWidget::GetColorPixel()
 {
     return color_pixel;
 }
